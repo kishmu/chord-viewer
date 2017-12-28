@@ -1,0 +1,24 @@
+{
+  "name": "chord-viewer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src",
+    "fixlint": "eslint --fix src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kishmu/chord-viewer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kishmu/chord-viewer/issues"
+  },
+  "homepage": "https://github.com/kishmu/chord-viewer#readme",
+  "devDependencies": {
+    "eslint": "^4.14.0"
+  }
+}
