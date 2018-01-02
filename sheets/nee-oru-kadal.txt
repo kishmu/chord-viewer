@@ -1,0 +1,45 @@
+nee-oru-kadal - D - 4/4
+movie: nayagan
+
+intro:
+strings       | - | - | - | - | 
+sitar         | A.D A.D | A.D A . | D.A D.A | A D |
+              | A.D A.D | D |
+
+verse 1:
+nee oru       || D | A D | D || x2
+vaai mozhi    | D A | D G |
+nee oru       | D | A D | D A | D G |
+nee oru       | D | A D |
+
+interlude 1:
+flute         | D | A | D | A D | 
+              | D A . . | A D\ |
+
+strings       | D F#m | D Em | A Em | A D |
+sitar         | - | \ D |
+
+verse 2:
+vaanam        || D | D G | D . D A | A D || x2
+isai          | F#m | % | 
+isai mazhai   | F#m | A D | F#m | A D |
+kadalalai     | A | E | A | E D |
+iravum        | D A | A \ |
+
+nee oru       | D | A D | 
+vaai mozhi    | D A | D G |
+nee oru       | D | A D | 
+
+interlude 2:
+flute/violin  | D | A |
+              | D G A D | D A G A |
+strings       | D | A | % | D |
+              | - | sitar |
+
+||verse 2:||
+
+end:
+nee oru       || D | A D || x2
+vaai mozhi    | D A | D G |
+nee oru       | D | A D | 
+

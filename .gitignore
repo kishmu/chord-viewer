@@ -59,5 +59,8 @@ typings/
 # dotenv environment variables file
 .env
 
+# webstorm
 .idea/
 
+# my notes
+.devnotes
