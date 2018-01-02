@@ -39,10 +39,10 @@ class Sheet {
         header = sections.shift().split(/(?: - )/);
       }
       this.parseHeader(header);
-      this.songSections = {};
+      this.songSections = new Map(); // use map to preserve insertion order
       sections.forEach((item, index) => {
         if (RE_SECTION_NAME.test(item) && sections[index + 1]) {
-          this.songSections[item] = sections[index + 1];
+          this.songSections.set(item, sections[index + 1]);
         }
       });
     });
