@@ -40,20 +40,22 @@ class Transposer {
   }
 
   getNew(oldChord) {
-    if (!(oldChord in SYMBOL2NUM)) {
+    let chordRoot = oldChord.match(/^[A-G][#|b]*/);
+    chordRoot = chordRoot && chordRoot[0];
+    if (!(chordRoot in SYMBOL2NUM)) {
       throw new Error(`unknown chord symbol '${oldChord}'`);
     }
-    return this.keyLookup[(this.amount + SYMBOL2NUM[oldChord]) % 12];
+    return oldChord.replace(chordRoot, this.keyLookup[(this.amount + SYMBOL2NUM[chordRoot]) % 12]);
   }
 }
 
-let transposer = new Transposer('C', 'Bb');
-
-/* eslint-disable no-console */
-console.log(transposer.getNew('C'));
-console.log(transposer.getNew('C#'));
-console.log(transposer.getNew('E'));
-console.log(transposer.getNew('B'));
+// let transposer = new Transposer('C', 'Bb');
+//
+// /* eslint-disable no-console */
+// console.log(transposer.getNew('C'));
+// console.log(transposer.getNew('C#'));
+// console.log(transposer.getNew('E'));
+// console.log(transposer.getNew('B'));
 
 module.exports = Transposer;
 
