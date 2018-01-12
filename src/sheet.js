@@ -1,8 +1,4 @@
 'use strict';
-
-const fs = require('fs');
-const util = require('util');
-const readFile = util.promisify(fs.readFile);
 const consts = require('./consts');
 const Transposer = require('./transposer');
 
@@ -17,30 +13,41 @@ const Transposer = require('./transposer');
 
         {paragraphs with empty line separation}
     */
-class Sheet {
-  constructor(filePath) {
-    if (filePath && !fs.existsSync(filePath)) {
-      throw new Error(`Path ${filePath} does not exist`);
-    }
 
-    this.filePath = filePath;
+function reduceMap(map, cb, initialValue) {
+  let ret;
+  let index = 0;
+  let iterator = map.entries();
+  if (initialValue === undefined || initialValue === null) {
+    ret = iterator.next().value;
+    index++;
+  } else {
+    ret = initialValue;
+  }
+  for (let v of iterator) {
+    ret = cb(ret, v, index++);
+  }
+  return ret;
+}
+
+class Sheet {
+  constructor() {
     this.songSections = new Map(); // use map to preserve insertion order
   }
 
-  parse() {
-    return readFile(this.filePath, 'utf-8').then((sheet) => {
-      let header;
-      let sections = sheet.split(consts.RE.SECTIONS);
-      while (!header && sections.length > 0) {
-        header = sections.shift().split(/(?: - )/);
+  parse(sheet) {
+    let header;
+    let sections = sheet.split(consts.RE.SECTIONS);
+    while (!header && sections.length > 0) {
+      header = sections.shift().split(/(?: - )/);
+    }
+    this.parseHeader(header);
+    sections.forEach((item, index) => {
+      if (consts.RE.SECTION_NAME.test(item) && sections[index + 1]) {
+        this.songSections.set(item, sections[index + 1].trim().replace(/^-*/, ''));
       }
-      this.parseHeader(header);
-      sections.forEach((item, index) => {
-        if (consts.RE.SECTION_NAME.test(item) && sections[index + 1]) {
-          this.songSections.set(item, sections[index + 1].trim().replace(/^-*/, ''));
-        }
-      });
     });
+    return this;
   }
 
   parseHeader(header) {
@@ -91,20 +98,14 @@ class Sheet {
     return ret;
   }
 
-  print() {
-    console.log(`${this.songName} - ${this.key} - ${this.timeSignature}`);
-    if (this.movie) console.log(`movie: ${this.movie}`);
-    console.log('');
-    this.songSections.forEach((v, k) => {
-      console.log(k);
-      console.log('-'.repeat(k.length));
-      console.log(v);
-      console.log('');
-    });
+  toString() {
+    let header = `${this.songName} - ${this.key} - ${this.timeSignature} \nmovie: ${this.movie}\n\n`;
+    let sections = reduceMap(this.songSections, (acc, [sectionName, chords]) => {
+      let underline = '-'.repeat(sectionName.length);
+      return acc + `${sectionName}\n${underline}\n${chords}\n\n`;
+    }, '');
+    return header + sections;
   }
 }
 
-let sheet = new Sheet('../sheets/nee-oru-kadal.txt');
-sheet.parse().then(() => {
-  sheet.transpose('-5').print();
-});
+module.exports = Sheet;
