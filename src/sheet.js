@@ -3,15 +3,8 @@
 const fs = require('fs');
 const util = require('util');
 const readFile = util.promisify(fs.readFile);
+const consts = require('./consts');
 const Transposer = require('./transposer');
-
-const RE_NOTE = new RegExp(`[A-G](?:#|b)?`);
-const RE_CHORD = new RegExp(`${RE_NOTE.source}[a-z|1-7|#|b|\\-|\\+]*`);
-const RE_CHORDS = new RegExp(`${RE_CHORD.source}`, 'g');
-
-const SECTION_NAMES = ['intro', 'interlude', 'verse', 'chorus', 'end', 'ending', 'coda', 'pallavi', 'charanam'];
-const RE_SECTIONS = new RegExp(`((?:\\|\\|)?(?:${SECTION_NAMES.join('|')})\\s*\\d*:(?:\\|\\|)?)`);
-const RE_SECTION_NAME = new RegExp(`^(?:\\|\\|)?\\s*${SECTION_NAMES.join('|')}(?:\\s:\\|\\|)?`);
 
 /* sheet format:
      songname - key - timesig <== Header
@@ -26,7 +19,7 @@ const RE_SECTION_NAME = new RegExp(`^(?:\\|\\|)?\\s*${SECTION_NAMES.join('|')}(?
     */
 class Sheet {
   constructor(filePath) {
-    if (!fs.existsSync(filePath)) {
+    if (filePath && !fs.existsSync(filePath)) {
       throw new Error(`Path ${filePath} does not exist`);
     }
 
@@ -36,15 +29,15 @@ class Sheet {
 
   parse() {
     return readFile(this.filePath, 'utf-8').then((sheet) => {
-      let sections = sheet.split(RE_SECTIONS);
       let header;
+      let sections = sheet.split(consts.RE.SECTIONS);
       while (!header && sections.length > 0) {
         header = sections.shift().split(/(?: - )/);
       }
       this.parseHeader(header);
       sections.forEach((item, index) => {
-        if (RE_SECTION_NAME.test(item) && sections[index + 1]) {
-          this.songSections.set(item, sections[index + 1]);
+        if (consts.RE.SECTION_NAME.test(item) && sections[index + 1]) {
+          this.songSections.set(item, sections[index + 1].trim().replace(/^-*/, ''));
         }
       });
     });
@@ -55,7 +48,7 @@ class Sheet {
       throw new Error('invalid header, length < 3');
     }
     this.songName = header[0];
-    this.key = header[1].match(new RegExp(`^${RE_NOTE.source}$`));
+    this.key = header[1].match(new RegExp(`^${consts.RE.NOTE.source}$`));
     if (!this.key) {
       throw new Error(`unknown key ${header[1]}`);
     }
@@ -77,27 +70,41 @@ class Sheet {
   }
 
   transpose(newKey) {
+    if (this.key === newKey) {
+      return this.songSections;
+    }
     let transposer = new Transposer(this.key, newKey);
     let transposedSections = new Map();
     this.songSections.forEach((v, k) => {
-      transposedSections.set(k, v.replace(RE_CHORDS, (match) => {
+      transposedSections.set(k, v.replace(consts.RE.CHORDS, (match) => {
         return transposer.getNew(match);
       }));
     });
-    return transposedSections;
+    let ret = new Sheet();
+    // header
+    ret.songName = this.songName;
+    ret.key = transposer.getNew(this.key);
+    ret.timeSignature = this.timeSignature;
+    ret.movie = this.movie;
+    // sections
+    ret.songSections = transposedSections;
+    return ret;
   }
 
-  print(sections) {
+  print() {
     console.log(`${this.songName} - ${this.key} - ${this.timeSignature}`);
     if (this.movie) console.log(`movie: ${this.movie}`);
-    sections.forEach((v, k) => {
+    console.log('');
+    this.songSections.forEach((v, k) => {
       console.log(k);
+      console.log('-'.repeat(k.length));
       console.log(v);
+      console.log('');
     });
   }
 }
 
 let sheet = new Sheet('../sheets/nee-oru-kadal.txt');
 sheet.parse().then(() => {
-  sheet.print(sheet.transpose('E'));
+  sheet.transpose('-5').print();
 });

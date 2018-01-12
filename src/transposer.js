@@ -1,61 +1,45 @@
 'use strict';
-
-const SYMBOL2NUM = {
-  'C': 0,
-  'C#': 1,
-  'Db': 1,
-  'D': 2,
-  'D#': 3,
-  'Eb': 3,
-  'E': 4,
-  'F': 5,
-  'F#': 6,
-  'Gb': 6,
-  'G': 7,
-  'G#': 8,
-  'Ab': 8,
-  'A': 9,
-  'A#': 10,
-  'Bb': 10,
-  'B': 11
-};
-
-const SHARPS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const FLATS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const consts = require('./consts');
 
 class Transposer {
   constructor(oldKey, newKey) {
-    if (!(oldKey in SYMBOL2NUM && newKey in SYMBOL2NUM)) {
-      throw new Error(`invalid input oldKey: ${oldKey}, newKey: ${newKey}`);
+    if (!oldKey in consts.SYMBOL2NUM) {
+      throw new Error(`invalid oldKey: ${oldKey}`);
     }
-    if (SHARPS.indexOf(newKey) > -1) {
-      this.keyLookup = SHARPS;
+
+    // semitone to transpose
+    if (Number(newKey)) { // transpose value as semitone +/-
+      this.semitones = newKey % 12;
     } else {
-      this.keyLookup = FLATS;
+      if (!newKey in consts.SYMBOL2NUM) {
+        throw new Error(`invalid newKey: ${newKey}`);
+      }
+      this.semitones = consts.SYMBOL2NUM[newKey] - consts.SYMBOL2NUM[oldKey];
     }
-    this.amount = SYMBOL2NUM[newKey] - SYMBOL2NUM[oldKey];
-    if (this.amount < 0) {
-      this.amount = 12 + this.amount;
+    if (this.semitones < 0) {
+      this.semitones = 12 + this.semitones;
+    }
+
+    // keylookup
+    if (Number(newKey)) {
+      newKey = consts.PREFERRED_KEYS[(consts.SYMBOL2NUM[oldKey] + this.semitones) % 12];
+    }
+    if (consts.SHARP_KEYS.indexOf(newKey) > -1) {
+      this.keyLookup = consts.SHARPS;
+    } else {
+      this.keyLookup = consts.FLATS;
     }
   }
 
   getNew(oldChord) {
-    let chordRoot = oldChord.match(/^[A-G][#|b]*/);
+    let chordRoot = oldChord.match(consts.RE.NOTE);
     chordRoot = chordRoot && chordRoot[0];
-    if (!(chordRoot in SYMBOL2NUM)) {
+    if (!(chordRoot in consts.SYMBOL2NUM)) {
       throw new Error(`unknown chord symbol '${oldChord}'`);
     }
-    return oldChord.replace(chordRoot, this.keyLookup[(this.amount + SYMBOL2NUM[chordRoot]) % 12]);
+    return oldChord.replace(chordRoot, this.keyLookup[(consts.SYMBOL2NUM[chordRoot] + this.semitones) % 12]);
   }
 }
-
-// let transposer = new Transposer('C', 'Bb');
-//
-// /* eslint-disable no-console */
-// console.log(transposer.getNew('C'));
-// console.log(transposer.getNew('C#'));
-// console.log(transposer.getNew('E'));
-// console.log(transposer.getNew('B'));
 
 module.exports = Transposer;
 
