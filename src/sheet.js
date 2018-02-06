@@ -55,11 +55,10 @@ class Sheet {
       throw new Error('invalid header, length < 3');
     }
     this.songName = header[0];
-    this.key = header[1].match(new RegExp(`^${consts.RE.NOTE.source}$`));
+    this.key = header[1].match(consts.RE.CHORD)[0];
     if (!this.key) {
       throw new Error(`unknown key ${header[1]}`);
     }
-    this.key = this.key[0];
     let rest = header[2].split(/\n+/);
     if (rest.length < 1) {
       throw new Error('no time signature');
@@ -76,16 +75,45 @@ class Sheet {
     }
   }
 
+  transposeLine(line, transposer) {
+
+//     let lines = chords.split('\n');
+
+// lines = lines.map((line) => {
+//   let index = line.indexOf('|');
+//   if (index > -1) {
+//     let lyrics = line.substring(0, index-1);
+//     let chords = line.substring(index);
+//     return `${lyrics}${chords.replace(consts.RE.CHORD, '*')}`;
+//   } else {
+//     return line;
+//   }
+// });
+
+    let index = line.indexOf('|');
+    if (index > -1) {
+      let lyrics = line.substring(0, index-1);
+      let chords = line.substring(index);
+      return `${lyrics}${chords.replace(consts.RE.CHORD, (chord) => {
+        return chord.replace(chord, transposer.getNew(chord));
+      })}`;
+    } else {
+      return line;
+    }
+  }
+
   transpose(newKey) {
-    if (this.key === newKey) {
-      return this.songSections;
+    if (this.key === newKey || newKey === 0) {
+      return this;
     }
     let transposer = new Transposer(this.key, newKey);
     let transposedSections = new Map();
-    this.songSections.forEach((v, k) => {
-      transposedSections.set(k, v.replace(consts.RE.CHORDS, (match) => {
-        return transposer.getNew(match);
-      }));
+    this.songSections.forEach((chords, sectionName) => {
+      let lines = chords.split('\n');
+      lines = lines.map((line) => {
+        return this.transposeLine(line, transposer);
+      });
+      transposedSections.set(sectionName, lines.join('\n'));
     });
     let ret = new Sheet();
     // header
@@ -99,7 +127,7 @@ class Sheet {
   }
 
   toString() {
-    let header = `${this.songName} - ${this.key} - ${this.timeSignature} \nmovie: ${this.movie}\n\n`;
+    let header = `${this.songName} - ${this.key} - ${this.timeSignature} \nmovie:${this.movie ? this.movie : ' --'}\n\n`;
     let sections = reduceMap(this.songSections, (acc, [sectionName, chords]) => {
       let underline = '-'.repeat(sectionName.length);
       return acc + `${sectionName}\n${underline}\n${chords}\n\n`;

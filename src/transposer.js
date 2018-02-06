@@ -32,6 +32,9 @@ class Transposer {
   }
 
   getNew(oldChord) {
+    if (!oldChord) {
+      return;
+    }
     let chordRoot = oldChord.match(consts.RE.NOTE);
     chordRoot = chordRoot && chordRoot[0];
     if (!(chordRoot in consts.SYMBOL2NUM)) {

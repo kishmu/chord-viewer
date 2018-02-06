@@ -1,12 +1,10 @@
 const SECTION_NAMES = ['intro', 'interlude', 'verse', 'chorus', 'end', 'ending', 'coda', 'pallavi', 'charanam'];
 const RE = {
   NOTE: new RegExp(`[A-G](?:#|b)?`),
-  SECTIONS: new RegExp(`((?:\\|\\|)?(?:${SECTION_NAMES.join('|')})\\s*\\d*:(?:\\|\\|)?)`),
-  SECTION_NAME: new RegExp(`^(?:\\|\\|)?\\s*${SECTION_NAMES.join('|')}(?:\\s:\\|\\|)?`)
+  CHORD: new RegExp(`[A-G](?:[a-z]|M|#|b|Aug|\\-|\\+|[1-7])*`, 'g'),
+  SECTIONS: new RegExp(`((?:\\|\\|)?(?:${SECTION_NAMES.join('|')})\\s*\\d*:(?:\\|\\|)?)`, 'i'),
+  SECTION_NAME: new RegExp(`^(?:\\|\\|)?\\s*${SECTION_NAMES.join('|')}(?:\\s:\\|\\|)?`, 'i')
 };
-
-RE.CHORD = new RegExp(`${RE.NOTE.source}[a-z|1-7|#|b|\\-|\\+]*`);
-RE.CHORDS = new RegExp(`${RE.CHORD.source}`, 'g');
 
 const SYMBOL2NUM = {
   'C': 0,
@@ -31,8 +29,8 @@ const SYMBOL2NUM = {
 const SHARPS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const FLATS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 const PREFERRED_KEYS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
-const SHARP_KEYS = ['C#', 'D', 'D#', 'E', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const FLAT_KEYS = ['Db', 'Eb', 'F', 'Gb', 'Ab', 'Bb'];
+const SHARP_KEYS = ['C#', 'D', 'D#', 'E', 'F#', 'G', 'G#', 'A', 'A#', 'B']; // with sharp(s) in key signature
+const FLAT_KEYS = ['Db', 'Eb', 'F', 'Gb', 'Ab', 'Bb']; // with flat(s) in key signature
 
 module.exports = {
   RE,
