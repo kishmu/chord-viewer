@@ -76,20 +76,6 @@ class Sheet {
   }
 
   transposeLine(line, transposer) {
-
-//     let lines = chords.split('\n');
-
-// lines = lines.map((line) => {
-//   let index = line.indexOf('|');
-//   if (index > -1) {
-//     let lyrics = line.substring(0, index-1);
-//     let chords = line.substring(index);
-//     return `${lyrics}${chords.replace(consts.RE.CHORD, '*')}`;
-//   } else {
-//     return line;
-//   }
-// });
-
     let index = line.indexOf('|');
     if (index > -1) {
       let lyrics = line.substring(0, index-1);
