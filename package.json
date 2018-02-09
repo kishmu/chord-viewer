@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint src",
-    "fixlint": "eslint --fix src"
+    "fixlint": "eslint --fix src",
+    "build": "webpack --progress"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,10 @@
   },
   "homepage": "https://github.com/kishmu/chord-viewer#readme",
   "devDependencies": {
-    "eslint": "^4.14.0"
+    "eslint": "^4.14.0",
+    "webpack": "^3.10.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.5"
   }
 }

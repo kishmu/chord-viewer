@@ -1,20 +1,21 @@
 'use strict';
-const consts = require('./consts');
+import consts from './consts';
 
 class Transposer {
   constructor(oldKey, newKey) {
-    if (!oldKey in consts.SYMBOL2NUM) {
+    // semitone to transpose
+    let oldKeyRoot = oldKey.match(consts.RE.NOTE)[0];
+    if (!(oldKeyRoot in consts.SYMBOL2NUM)) {
       throw new Error(`invalid oldKey: ${oldKey}`);
     }
-
-    // semitone to transpose
     if (Number(newKey)) { // transpose value as semitone +/-
       this.semitones = newKey % 12;
     } else {
-      if (!newKey in consts.SYMBOL2NUM) {
+      let newKeyRoot = newKey.match(consts.RE.NOTE)[0];
+      if (!(newKeyRoot in consts.SYMBOL2NUM)) {
         throw new Error(`invalid newKey: ${newKey}`);
       }
-      this.semitones = consts.SYMBOL2NUM[newKey] - consts.SYMBOL2NUM[oldKey];
+      this.semitones = consts.SYMBOL2NUM[newKeyRoot] - consts.SYMBOL2NUM[oldKeyRoot];
     }
     if (this.semitones < 0) {
       this.semitones = 12 + this.semitones;
@@ -22,7 +23,7 @@ class Transposer {
 
     // keylookup
     if (Number(newKey)) {
-      newKey = consts.PREFERRED_KEYS[(consts.SYMBOL2NUM[oldKey] + this.semitones) % 12];
+      newKey = consts.PREFERRED_KEYS[(consts.SYMBOL2NUM[oldKeyRoot] + this.semitones) % 12];
     }
     if (consts.SHARP_KEYS.indexOf(newKey) > -1) {
       this.keyLookup = consts.SHARPS;
@@ -44,6 +45,4 @@ class Transposer {
   }
 }
 
-module.exports = Transposer;
-
-//
+export default Transposer;

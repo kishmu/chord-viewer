@@ -1,9 +1,8 @@
 const SECTION_NAMES = ['intro', 'interlude', 'verse', 'chorus', 'end', 'ending', 'coda', 'pallavi', 'charanam'];
 const RE = {
   NOTE: new RegExp(`[A-G](?:#|b)?`),
-  CHORD: new RegExp(`[A-G](?:[a-z]|M|#|b|Aug|\\-|\\+|[1-7])*`, 'g'),
-  SECTIONS: new RegExp(`((?:\\|\\|)?(?:${SECTION_NAMES.join('|')})\\s*\\d*:(?:\\|\\|)?)`, 'i'),
-  SECTION_NAME: new RegExp(`^(?:\\|\\|)?\\s*${SECTION_NAMES.join('|')}(?:\\s:\\|\\|)?`, 'i')
+  CHORD: new RegExp(`[A-G]([a-z]|M|#|b|Aug|\\-|\\+|[1-7]|[\\(\\)])*`, 'g'),
+  SECTIONS: new RegExp(`((?:\\|\\|)?(?:${SECTION_NAMES.join('|')})\\s*\\d*\\:(?:\\|\\|)?)`, 'i'),
 };
 
 const SYMBOL2NUM = {
@@ -32,7 +31,7 @@ const PREFERRED_KEYS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'B
 const SHARP_KEYS = ['C#', 'D', 'D#', 'E', 'F#', 'G', 'G#', 'A', 'A#', 'B']; // with sharp(s) in key signature
 const FLAT_KEYS = ['Db', 'Eb', 'F', 'Gb', 'Ab', 'Bb']; // with flat(s) in key signature
 
-module.exports = {
+export default {
   RE,
   SECTION_NAMES,
   SYMBOL2NUM,
@@ -42,6 +41,3 @@ module.exports = {
   SHARP_KEYS,
   FLAT_KEYS
 };
-
-
-

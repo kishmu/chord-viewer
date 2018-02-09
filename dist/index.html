@@ -1,0 +1,22 @@
+<!DOCTYPE <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Chord Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--link rel="stylesheet" type="text/css" media="screen" href="main.css" /-->
+</head>
+<body>
+    <div id="app">
+        <input type="file" id="file">
+        <div id="transposer">
+            <label>Transpose: </label>
+            <span id="transpose-value">0</span>
+            <input id="transpose-range" type="range" min="-11" max="11" value="0" step="1">
+        </div>
+        <div id="chord-panel"></div>
+    </div>
+    <script src="bundle.js"></script>
+</body>
+</html>
