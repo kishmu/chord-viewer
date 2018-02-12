@@ -27,9 +27,11 @@ const SYMBOL2NUM = {
 
 const SHARPS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const FLATS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+// key types
 const PREFERRED_KEYS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
-const SHARP_KEYS = ['C#', 'D', 'D#', 'E', 'F#', 'G', 'G#', 'A', 'A#', 'B']; // with sharp(s) in key signature
-const FLAT_KEYS = ['Db', 'Eb', 'F', 'Gb', 'Ab', 'Bb']; // with flat(s) in key signature
+const SHARP_KEYS = ['C#', 'C#m', 'D', 'D#', 'D#m', 'E', 'Em', 'F#', 'F#m', 'G', 'G#', 'G#m', 'A', 'A#', 'A#m', 'B', 'Bm']; // with sharp(s) in key signature
+const FLAT_KEYS = ['Cm', 'Db', 'Dbm', 'Dm', 'Eb', 'Ebm', 'F', 'Fm', 'Gb', 'Gbm', 'Gm', 'Ab', 'Abm', 'Bb', 'Bbm']; // with flat(s) in key signature
 
 export default {
   RE,

@@ -3,29 +3,32 @@ import consts from './consts';
 
 class Transposer {
   constructor(oldKey, newKey) {
-    // semitone to transpose
     let oldKeyRoot = oldKey.match(consts.RE.NOTE)[0];
     if (!(oldKeyRoot in consts.SYMBOL2NUM)) {
       throw new Error(`invalid oldKey: ${oldKey}`);
     }
+
+    // calculate semitones to transpose
+    let newKeyRoot;
     if (Number(newKey)) { // transpose value as semitone +/-
       this.semitones = newKey % 12;
+      if (this.semitones < 0) {
+        this.semitones = 12 + this.semitones;
+      }
+      newKeyRoot = consts.PREFERRED_KEYS[(consts.SYMBOL2NUM[oldKeyRoot] + this.semitones) % 12];
     } else {
-      let newKeyRoot = newKey.match(consts.RE.NOTE)[0];
+      newKeyRoot = newKey.match(consts.RE.NOTE)[0];
       if (!(newKeyRoot in consts.SYMBOL2NUM)) {
         throw new Error(`invalid newKey: ${newKey}`);
       }
       this.semitones = consts.SYMBOL2NUM[newKeyRoot] - consts.SYMBOL2NUM[oldKeyRoot];
-    }
-    if (this.semitones < 0) {
-      this.semitones = 12 + this.semitones;
+      if (this.semitones < 0) {
+        this.semitones = 12 + this.semitones;
+      }
     }
 
-    // keylookup
-    if (Number(newKey)) {
-      newKey = consts.PREFERRED_KEYS[(consts.SYMBOL2NUM[oldKeyRoot] + this.semitones) % 12];
-    }
-    if (consts.SHARP_KEYS.indexOf(newKey) > -1) {
+    // lookup array to use
+    if (consts.SHARP_KEYS.indexOf(oldKey.replace(oldKeyRoot, newKeyRoot)) > -1) {
       this.keyLookup = consts.SHARPS;
     } else {
       this.keyLookup = consts.FLATS;
@@ -36,8 +39,7 @@ class Transposer {
     if (!oldChord) {
       return;
     }
-    let chordRoot = oldChord.match(consts.RE.NOTE);
-    chordRoot = chordRoot && chordRoot[0];
+    let chordRoot = oldChord.match(consts.RE.NOTE)[0];
     if (!(chordRoot in consts.SYMBOL2NUM)) {
       throw new Error(`unknown chord symbol '${oldChord}'`);
     }

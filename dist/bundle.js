@@ -97,9 +97,11 @@ const SYMBOL2NUM = {
 
 const SHARPS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const FLATS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+// key types
 const PREFERRED_KEYS = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
-const SHARP_KEYS = ['C#', 'D', 'D#', 'E', 'F#', 'G', 'G#', 'A', 'A#', 'B']; // with sharp(s) in key signature
-const FLAT_KEYS = ['Db', 'Eb', 'F', 'Gb', 'Ab', 'Bb']; // with flat(s) in key signature
+const SHARP_KEYS = ['C#', 'C#m', 'D', 'D#', 'D#m', 'E', 'Em', 'F#', 'F#m', 'G', 'G#', 'G#m', 'A', 'A#', 'A#m', 'B', 'Bm']; // with sharp(s) in key signature
+const FLAT_KEYS = ['Cm', 'Db', 'Dbm', 'Dm', 'Eb', 'Ebm', 'F', 'Fm', 'Gb', 'Gbm', 'Gm', 'Ab', 'Abm', 'Bb', 'Bbm']; // with flat(s) in key signature
 
 /* harmony default export */ __webpack_exports__["a"] = ({
   RE,
@@ -358,29 +360,32 @@ class Sheet {
 
 class Transposer {
   constructor(oldKey, newKey) {
-    // semitone to transpose
     let oldKeyRoot = oldKey.match(__WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].RE.NOTE)[0];
     if (!(oldKeyRoot in __WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].SYMBOL2NUM)) {
       throw new Error(`invalid oldKey: ${oldKey}`);
     }
+
+    // calculate semitones to transpose
+    let newKeyRoot;
     if (Number(newKey)) { // transpose value as semitone +/-
       this.semitones = newKey % 12;
+      if (this.semitones < 0) {
+        this.semitones = 12 + this.semitones;
+      }
+      newKeyRoot = __WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].PREFERRED_KEYS[(__WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].SYMBOL2NUM[oldKeyRoot] + this.semitones) % 12];
     } else {
-      let newKeyRoot = newKey.match(__WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].RE.NOTE)[0];
+      newKeyRoot = newKey.match(__WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].RE.NOTE)[0];
       if (!(newKeyRoot in __WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].SYMBOL2NUM)) {
         throw new Error(`invalid newKey: ${newKey}`);
       }
       this.semitones = __WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].SYMBOL2NUM[newKeyRoot] - __WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].SYMBOL2NUM[oldKeyRoot];
-    }
-    if (this.semitones < 0) {
-      this.semitones = 12 + this.semitones;
+      if (this.semitones < 0) {
+        this.semitones = 12 + this.semitones;
+      }
     }
 
-    // keylookup
-    if (Number(newKey)) {
-      newKey = __WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].PREFERRED_KEYS[(__WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].SYMBOL2NUM[oldKeyRoot] + this.semitones) % 12];
-    }
-    if (__WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].SHARP_KEYS.indexOf(newKey) > -1) {
+    // lookup array to use
+    if (__WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].SHARP_KEYS.indexOf(oldKey.replace(oldKeyRoot, newKeyRoot)) > -1) {
       this.keyLookup = __WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].SHARPS;
     } else {
       this.keyLookup = __WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].FLATS;
@@ -391,8 +396,7 @@ class Transposer {
     if (!oldChord) {
       return;
     }
-    let chordRoot = oldChord.match(__WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].RE.NOTE);
-    chordRoot = chordRoot && chordRoot[0];
+    let chordRoot = oldChord.match(__WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].RE.NOTE)[0];
     if (!(chordRoot in __WEBPACK_IMPORTED_MODULE_0__consts__["a" /* default */].SYMBOL2NUM)) {
       throw new Error(`unknown chord symbol '${oldChord}'`);
     }
