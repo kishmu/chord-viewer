@@ -21,7 +21,7 @@
   "homepage": "https://github.com/kishmu/chord-viewer#readme",
   "devDependencies": {
     "eslint": "^4.14.0",
-    "webpack": "^3.10.0"
+    "webpack": "^4.20.2"
   },
   "dependencies": {
     "lodash": "^4.17.5"
